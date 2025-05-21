@@ -32,13 +32,54 @@
             this.button2 = new System.Windows.Forms.Button();
             this.dgvResultados = new System.Windows.Forms.DataGridView();
             this.label1 = new System.Windows.Forms.Label();
-            this.txtSemilla = new System.Windows.Forms.TextBox();
+            this.nudPuntos = new System.Windows.Forms.NumericUpDown();
+            this.nudAnimales = new System.Windows.Forms.NumericUpDown();
+            this.label2 = new System.Windows.Forms.Label();
+            this.nudDias = new System.Windows.Forms.NumericUpDown();
+            this.label3 = new System.Windows.Forms.Label();
+            this.nudMuestrasPorDia = new System.Windows.Forms.NumericUpDown();
+            this.label4 = new System.Windows.Forms.Label();
+            this.cmbMercurio = new System.Windows.Forms.ComboBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.cmbClorhidrico = new System.Windows.Forms.ComboBox();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.cmbOxidos = new System.Windows.Forms.ComboBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.cmbFosfatos = new System.Windows.Forms.ComboBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.cmbSulfatos = new System.Windows.Forms.ComboBox();
+            this.lbl1 = new System.Windows.Forms.Label();
+            this.label = new System.Windows.Forms.Label();
+            this.cmbPetroquimicos = new System.Windows.Forms.ComboBox();
+            this.lbl = new System.Windows.Forms.Label();
+            this.cmbColoidales = new System.Windows.Forms.ComboBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.label13 = new System.Windows.Forms.Label();
+            this.cmbAlcalinidad = new System.Windows.Forms.ComboBox();
+            this.label11 = new System.Windows.Forms.Label();
+            this.cmbGlucosa = new System.Windows.Forms.ComboBox();
+            this.label12 = new System.Windows.Forms.Label();
+            this.cmbNormal = new System.Windows.Forms.ComboBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.cmbAnemia = new System.Windows.Forms.ComboBox();
+            this.label15 = new System.Windows.Forms.Label();
+            this.label16 = new System.Windows.Forms.Label();
+            this.cmbAcidez = new System.Windows.Forms.ComboBox();
+            this.lblConcluciones = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dgvResultados)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudPuntos)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudAnimales)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudDias)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudMuestrasPorDia)).BeginInit();
+            this.panel1.SuspendLayout();
+            this.panel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnEjecutar
             // 
-            this.btnEjecutar.Location = new System.Drawing.Point(349, 95);
+            this.btnEjecutar.Location = new System.Drawing.Point(744, 34);
             this.btnEjecutar.Name = "btnEjecutar";
             this.btnEjecutar.Size = new System.Drawing.Size(75, 23);
             this.btnEjecutar.TabIndex = 0;
@@ -48,7 +89,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(426, 230);
+            this.button2.Location = new System.Drawing.Point(420, 217);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(8, 8);
             this.button2.TabIndex = 1;
@@ -58,37 +99,511 @@
             // dgvResultados
             // 
             this.dgvResultados.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvResultados.Location = new System.Drawing.Point(101, 135);
+            this.dgvResultados.Location = new System.Drawing.Point(35, 337);
             this.dgvResultados.Name = "dgvResultados";
             this.dgvResultados.RowHeadersWidth = 51;
             this.dgvResultados.RowTemplate.Height = 24;
-            this.dgvResultados.Size = new System.Drawing.Size(596, 235);
+            this.dgvResultados.Size = new System.Drawing.Size(1005, 275);
             this.dgvResultados.TabIndex = 2;
             this.dgvResultados.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvResultados_CellContentClick);
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(239, 27);
+            this.label1.Location = new System.Drawing.Point(32, 3);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(269, 32);
+            this.label1.Size = new System.Drawing.Size(126, 16);
             this.label1.TabIndex = 3;
-            this.label1.Text = "Ingrese la semilla inicial para la simulación\r\n (un número entero positivo, por e" +
-    "jemplo, 17)";
+            this.label1.Text = "Puntos de muestreo";
             // 
-            // txtSemilla
+            // nudPuntos
             // 
-            this.txtSemilla.Location = new System.Drawing.Point(334, 67);
-            this.txtSemilla.Name = "txtSemilla";
-            this.txtSemilla.Size = new System.Drawing.Size(100, 22);
-            this.txtSemilla.TabIndex = 4;
+            this.nudPuntos.Location = new System.Drawing.Point(35, 34);
+            this.nudPuntos.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.nudPuntos.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nudPuntos.Name = "nudPuntos";
+            this.nudPuntos.Size = new System.Drawing.Size(120, 22);
+            this.nudPuntos.TabIndex = 4;
+            this.nudPuntos.Value = new decimal(new int[] {
+            4,
+            0,
+            0,
+            0});
+            // 
+            // nudAnimales
+            // 
+            this.nudAnimales.Location = new System.Drawing.Point(210, 34);
+            this.nudAnimales.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.nudAnimales.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nudAnimales.Name = "nudAnimales";
+            this.nudAnimales.Size = new System.Drawing.Size(120, 22);
+            this.nudAnimales.TabIndex = 6;
+            this.nudAnimales.Value = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(207, 3);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(117, 16);
+            this.label2.TabIndex = 5;
+            this.label2.Text = "Animales en punto";
+            // 
+            // nudDias
+            // 
+            this.nudDias.Location = new System.Drawing.Point(360, 34);
+            this.nudDias.Maximum = new decimal(new int[] {
+            30,
+            0,
+            0,
+            0});
+            this.nudDias.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nudDias.Name = "nudDias";
+            this.nudDias.Size = new System.Drawing.Size(120, 22);
+            this.nudDias.TabIndex = 8;
+            this.nudDias.Value = new decimal(new int[] {
+            14,
+            0,
+            0,
+            0});
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(357, 3);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(113, 16);
+            this.label3.TabIndex = 7;
+            this.label3.Text = "Dias de muestreo";
+            // 
+            // nudMuestrasPorDia
+            // 
+            this.nudMuestrasPorDia.Location = new System.Drawing.Point(513, 34);
+            this.nudMuestrasPorDia.Maximum = new decimal(new int[] {
+            50,
+            0,
+            0,
+            0});
+            this.nudMuestrasPorDia.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nudMuestrasPorDia.Name = "nudMuestrasPorDia";
+            this.nudMuestrasPorDia.Size = new System.Drawing.Size(120, 22);
+            this.nudMuestrasPorDia.TabIndex = 10;
+            this.nudMuestrasPorDia.Value = new decimal(new int[] {
+            20,
+            0,
+            0,
+            0});
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(510, 3);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(107, 16);
+            this.label4.TabIndex = 9;
+            this.label4.Text = "Muestras por dia";
+            // 
+            // cmbMercurio
+            // 
+            this.cmbMercurio.AutoCompleteCustomSource.AddRange(new string[] {
+            "0.01",
+            "0.10",
+            "0.15",
+            "0.20",
+            "0.25"});
+            this.cmbMercurio.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbMercurio.FormattingEnabled = true;
+            this.cmbMercurio.Location = new System.Drawing.Point(3, 44);
+            this.cmbMercurio.Name = "cmbMercurio";
+            this.cmbMercurio.Size = new System.Drawing.Size(121, 24);
+            this.cmbMercurio.TabIndex = 11;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(67, 0);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(190, 16);
+            this.label5.TabIndex = 12;
+            this.label5.Text = "Probabilidades contaminantes";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(0, 83);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(109, 16);
+            this.label6.TabIndex = 14;
+            this.label6.Text = "Acido Clorhidrico";
+            // 
+            // cmbClorhidrico
+            // 
+            this.cmbClorhidrico.AutoCompleteCustomSource.AddRange(new string[] {
+            "0.01",
+            "0.10",
+            "0.12",
+            "0.15",
+            "0.20"});
+            this.cmbClorhidrico.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbClorhidrico.FormattingEnabled = true;
+            this.cmbClorhidrico.Location = new System.Drawing.Point(0, 102);
+            this.cmbClorhidrico.Name = "cmbClorhidrico";
+            this.cmbClorhidrico.Size = new System.Drawing.Size(121, 24);
+            this.cmbClorhidrico.TabIndex = 13;
+            // 
+            // panel1
+            // 
+            this.panel1.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.panel1.Controls.Add(this.cmbOxidos);
+            this.panel1.Controls.Add(this.label9);
+            this.panel1.Controls.Add(this.cmbFosfatos);
+            this.panel1.Controls.Add(this.label8);
+            this.panel1.Controls.Add(this.cmbSulfatos);
+            this.panel1.Controls.Add(this.lbl1);
+            this.panel1.Controls.Add(this.label);
+            this.panel1.Controls.Add(this.cmbPetroquimicos);
+            this.panel1.Controls.Add(this.lbl);
+            this.panel1.Controls.Add(this.cmbColoidales);
+            this.panel1.Controls.Add(this.label7);
+            this.panel1.Controls.Add(this.label5);
+            this.panel1.Controls.Add(this.cmbClorhidrico);
+            this.panel1.Controls.Add(this.label6);
+            this.panel1.Controls.Add(this.cmbMercurio);
+            this.panel1.Location = new System.Drawing.Point(32, 82);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(292, 249);
+            this.panel1.TabIndex = 16;
+            // 
+            // cmbOxidos
+            // 
+            this.cmbOxidos.AutoCompleteCustomSource.AddRange(new string[] {
+            "0.01",
+            "0.15",
+            "0.17",
+            "0.20",
+            "0.25"});
+            this.cmbOxidos.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbOxidos.FormattingEnabled = true;
+            this.cmbOxidos.Location = new System.Drawing.Point(0, 208);
+            this.cmbOxidos.Name = "cmbOxidos";
+            this.cmbOxidos.Size = new System.Drawing.Size(121, 24);
+            this.cmbOxidos.TabIndex = 26;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(0, 189);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(49, 16);
+            this.label9.TabIndex = 27;
+            this.label9.Text = "Oxidos";
+            // 
+            // cmbFosfatos
+            // 
+            this.cmbFosfatos.AutoCompleteCustomSource.AddRange(new string[] {
+            "0.01",
+            "0.10",
+            "0.16",
+            "0.20",
+            "0.25"});
+            this.cmbFosfatos.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbFosfatos.FormattingEnabled = true;
+            this.cmbFosfatos.Location = new System.Drawing.Point(133, 157);
+            this.cmbFosfatos.Name = "cmbFosfatos";
+            this.cmbFosfatos.Size = new System.Drawing.Size(121, 24);
+            this.cmbFosfatos.TabIndex = 24;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(133, 138);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(59, 16);
+            this.label8.TabIndex = 25;
+            this.label8.Text = "Fosfatos";
+            // 
+            // cmbSulfatos
+            // 
+            this.cmbSulfatos.AutoCompleteCustomSource.AddRange(new string[] {
+            "0.01",
+            "0.10",
+            "0.15",
+            "0.20",
+            "0.25"});
+            this.cmbSulfatos.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbSulfatos.FormattingEnabled = true;
+            this.cmbSulfatos.Location = new System.Drawing.Point(0, 157);
+            this.cmbSulfatos.Name = "cmbSulfatos";
+            this.cmbSulfatos.Size = new System.Drawing.Size(121, 24);
+            this.cmbSulfatos.TabIndex = 22;
+            // 
+            // lbl1
+            // 
+            this.lbl1.AutoSize = true;
+            this.lbl1.Location = new System.Drawing.Point(0, 138);
+            this.lbl1.Name = "lbl1";
+            this.lbl1.Size = new System.Drawing.Size(55, 16);
+            this.lbl1.TabIndex = 23;
+            this.lbl1.Text = "Sulfatos";
+            // 
+            // label
+            // 
+            this.label.AutoSize = true;
+            this.label.Location = new System.Drawing.Point(136, 25);
+            this.label.Name = "label";
+            this.label.Size = new System.Drawing.Size(72, 16);
+            this.label.TabIndex = 21;
+            this.label.Text = "Coloidales";
+            // 
+            // cmbPetroquimicos
+            // 
+            this.cmbPetroquimicos.AutoCompleteCustomSource.AddRange(new string[] {
+            "0.01",
+            "0.15",
+            "0.25",
+            "0.30",
+            "0.35"});
+            this.cmbPetroquimicos.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbPetroquimicos.FormattingEnabled = true;
+            this.cmbPetroquimicos.Location = new System.Drawing.Point(133, 102);
+            this.cmbPetroquimicos.Name = "cmbPetroquimicos";
+            this.cmbPetroquimicos.Size = new System.Drawing.Size(121, 24);
+            this.cmbPetroquimicos.TabIndex = 19;
+            // 
+            // lbl
+            // 
+            this.lbl.AutoSize = true;
+            this.lbl.Location = new System.Drawing.Point(133, 83);
+            this.lbl.Name = "lbl";
+            this.lbl.Size = new System.Drawing.Size(93, 16);
+            this.lbl.TabIndex = 20;
+            this.lbl.Text = "Petroquimicos";
+            // 
+            // cmbColoidales
+            // 
+            this.cmbColoidales.AutoCompleteCustomSource.AddRange(new string[] {
+            "0.05",
+            "0.10",
+            "0.15",
+            "0.20"});
+            this.cmbColoidales.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbColoidales.FormattingEnabled = true;
+            this.cmbColoidales.Location = new System.Drawing.Point(136, 44);
+            this.cmbColoidales.Name = "cmbColoidales";
+            this.cmbColoidales.Size = new System.Drawing.Size(121, 24);
+            this.cmbColoidales.TabIndex = 18;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(3, 25);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(59, 16);
+            this.label7.TabIndex = 17;
+            this.label7.Text = "Mercurio";
+            // 
+            // panel2
+            // 
+            this.panel2.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.panel2.Controls.Add(this.label13);
+            this.panel2.Controls.Add(this.cmbAlcalinidad);
+            this.panel2.Controls.Add(this.label11);
+            this.panel2.Controls.Add(this.cmbGlucosa);
+            this.panel2.Controls.Add(this.label12);
+            this.panel2.Controls.Add(this.cmbNormal);
+            this.panel2.Controls.Add(this.label10);
+            this.panel2.Controls.Add(this.cmbAnemia);
+            this.panel2.Controls.Add(this.label15);
+            this.panel2.Controls.Add(this.label16);
+            this.panel2.Controls.Add(this.cmbAcidez);
+            this.panel2.Location = new System.Drawing.Point(394, 82);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(292, 189);
+            this.panel2.TabIndex = 17;
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(67, 131);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(157, 16);
+            this.label13.TabIndex = 25;
+            this.label13.Text = "Alto grado de alcalinidad";
+            // 
+            // cmbAlcalinidad
+            // 
+            this.cmbAlcalinidad.AutoCompleteCustomSource.AddRange(new string[] {
+            "0.01",
+            "0.15",
+            "0.20",
+            "0.22",
+            "0.25"});
+            this.cmbAlcalinidad.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbAlcalinidad.FormattingEnabled = true;
+            this.cmbAlcalinidad.Location = new System.Drawing.Point(84, 150);
+            this.cmbAlcalinidad.Name = "cmbAlcalinidad";
+            this.cmbAlcalinidad.Size = new System.Drawing.Size(121, 24);
+            this.cmbAlcalinidad.TabIndex = 24;
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(146, 80);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(103, 16);
+            this.label11.TabIndex = 23;
+            this.label11.Text = "Exheso glucosa";
+            // 
+            // cmbGlucosa
+            // 
+            this.cmbGlucosa.AutoCompleteCustomSource.AddRange(new string[] {
+            "0.01",
+            "0.10",
+            "0.15",
+            "0.17",
+            "0.20"});
+            this.cmbGlucosa.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbGlucosa.FormattingEnabled = true;
+            this.cmbGlucosa.Location = new System.Drawing.Point(146, 99);
+            this.cmbGlucosa.Name = "cmbGlucosa";
+            this.cmbGlucosa.Size = new System.Drawing.Size(121, 24);
+            this.cmbGlucosa.TabIndex = 22;
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(3, 80);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(92, 16);
+            this.label12.TabIndex = 21;
+            this.label12.Text = "Rango normal";
+            // 
+            // cmbNormal
+            // 
+            this.cmbNormal.AutoCompleteCustomSource.AddRange(new string[] {
+            "0.01",
+            "0.20",
+            "0.30",
+            "0.35",
+            "0.40"});
+            this.cmbNormal.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbNormal.FormattingEnabled = true;
+            this.cmbNormal.Location = new System.Drawing.Point(3, 99);
+            this.cmbNormal.Name = "cmbNormal";
+            this.cmbNormal.Size = new System.Drawing.Size(121, 24);
+            this.cmbNormal.TabIndex = 20;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(146, 25);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(95, 16);
+            this.label10.TabIndex = 19;
+            this.label10.Text = "Anemia aguda";
+            // 
+            // cmbAnemia
+            // 
+            this.cmbAnemia.AutoCompleteCustomSource.AddRange(new string[] {
+            "0.01",
+            "0.05",
+            "0.08",
+            "0.10",
+            "0.15"});
+            this.cmbAnemia.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbAnemia.FormattingEnabled = true;
+            this.cmbAnemia.Location = new System.Drawing.Point(146, 44);
+            this.cmbAnemia.Name = "cmbAnemia";
+            this.cmbAnemia.Size = new System.Drawing.Size(121, 24);
+            this.cmbAnemia.TabIndex = 18;
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(3, 25);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(112, 16);
+            this.label15.TabIndex = 17;
+            this.label15.Text = "Alto grado acidez";
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(67, 0);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(173, 16);
+            this.label16.TabIndex = 12;
+            this.label16.Text = "Probabilidades sanguineas";
+            // 
+            // cmbAcidez
+            // 
+            this.cmbAcidez.AutoCompleteCustomSource.AddRange(new string[] {
+            "0.01",
+            "0.10",
+            "0.15",
+            "0.18",
+            "0.25"});
+            this.cmbAcidez.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbAcidez.FormattingEnabled = true;
+            this.cmbAcidez.Location = new System.Drawing.Point(3, 44);
+            this.cmbAcidez.Name = "cmbAcidez";
+            this.cmbAcidez.Size = new System.Drawing.Size(121, 24);
+            this.cmbAcidez.TabIndex = 11;
+            // 
+            // lblConcluciones
+            // 
+            this.lblConcluciones.AutoSize = true;
+            this.lblConcluciones.BackColor = System.Drawing.Color.Red;
+            this.lblConcluciones.Location = new System.Drawing.Point(35, 615);
+            this.lblConcluciones.Name = "lblConcluciones";
+            this.lblConcluciones.Size = new System.Drawing.Size(107, 16);
+            this.lblConcluciones.TabIndex = 18;
+            this.lblConcluciones.Text = "Muestras por dia";
+            this.lblConcluciones.Visible = false;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.txtSemilla);
+            this.ClientSize = new System.Drawing.Size(1393, 729);
+            this.Controls.Add(this.lblConcluciones);
+            this.Controls.Add(this.panel2);
+            this.Controls.Add(this.panel1);
+            this.Controls.Add(this.nudMuestrasPorDia);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.nudDias);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.nudAnimales);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.nudPuntos);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.dgvResultados);
             this.Controls.Add(this.button2);
@@ -96,6 +611,14 @@
             this.Name = "Form1";
             this.Text = "Form1";
             ((System.ComponentModel.ISupportInitialize)(this.dgvResultados)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudPuntos)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudAnimales)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudDias)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudMuestrasPorDia)).EndInit();
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
+            this.panel2.ResumeLayout(false);
+            this.panel2.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -107,7 +630,42 @@
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.DataGridView dgvResultados;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox txtSemilla;
+        private System.Windows.Forms.NumericUpDown nudPuntos;
+        private System.Windows.Forms.NumericUpDown nudAnimales;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.NumericUpDown nudDias;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.NumericUpDown nudMuestrasPorDia;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.ComboBox cmbMercurio;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.ComboBox cmbClorhidrico;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.ComboBox cmbOxidos;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.ComboBox cmbFosfatos;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.ComboBox cmbSulfatos;
+        private System.Windows.Forms.Label lbl1;
+        private System.Windows.Forms.Label label;
+        private System.Windows.Forms.ComboBox cmbPetroquimicos;
+        private System.Windows.Forms.Label lbl;
+        private System.Windows.Forms.ComboBox cmbColoidales;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.ComboBox cmbAcidez;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.ComboBox cmbAlcalinidad;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.ComboBox cmbGlucosa;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.ComboBox cmbNormal;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.ComboBox cmbAnemia;
+        private System.Windows.Forms.Label lblConcluciones;
     }
 }
 
