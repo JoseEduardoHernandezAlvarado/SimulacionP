@@ -68,6 +68,29 @@ namespace SimulacionP
             dgvResultados.Columns["CondicionSanguinea"].Width = 150;
             dgvResultados.Columns["AnimalesAfectados"].Width = 120;
             dgvResultados.Columns["Recomendacion"].Width = 120;
+
+            // Asegurar que lblConclusiones esté oculto inicialmente
+            lblConclusiones.Visible = false;
+
+            // Asociar eventos a ComboBox de contaminantes
+            cmbColoidales.SelectedIndexChanged += ComboBox_SelectedIndexChanged;
+            cmbMercurio.SelectedIndexChanged += ComboBox_SelectedIndexChanged;
+            cmbPetroquimicos.SelectedIndexChanged += ComboBox_SelectedIndexChanged;
+            cmbSulfatos.SelectedIndexChanged += ComboBox_SelectedIndexChanged;
+            cmbClorhidrico.SelectedIndexChanged += ComboBox_SelectedIndexChanged;
+            cmbFosfatos.SelectedIndexChanged += ComboBox_SelectedIndexChanged;
+            cmbOxidos.SelectedIndexChanged += ComboBox_SelectedIndexChanged;
+
+            // Asociar eventos a ComboBox de condiciones sanguíneas
+            cmbAcidez.SelectedIndexChanged += ComboBox_SelectedIndexChanged;
+            cmbAnemia.SelectedIndexChanged += ComboBox_SelectedIndexChanged;
+            cmbNormal.SelectedIndexChanged += ComboBox_SelectedIndexChanged;
+            cmbGlucosa.SelectedIndexChanged += ComboBox_SelectedIndexChanged;
+            cmbAlcalinidad.SelectedIndexChanged += ComboBox_SelectedIndexChanged;
+
+            // Calcular sumas iniciales
+            ActualizarSumaContaminantes();
+            ActualizarSumaCondiciones();
         }
 
         // Parámetros iniciales
@@ -78,6 +101,7 @@ namespace SimulacionP
         private double porcentajeContaminacion = 0.30; // 30% según validación
         private double probAlteracionSi = 0.70; // 70% si agua contaminada
         private double probAlteracionNo = 0.10; // 10% si agua no contaminada
+        private const int muestreosPorPunto = 3; // Número fijo de muestreos por punto
 
         // Distribución de contaminantes en agua (valores iniciales, se ajustarán dinámicamente)
         private Dictionary<string, double> contaminantes = new Dictionary<string, double>
@@ -95,10 +119,10 @@ namespace SimulacionP
         private Dictionary<string, double> condiciones = new Dictionary<string, double>
         {
             { "Alto grado de acidez", 0.18 },
-            { "Estado de anemia aguda", 0.26 },
-            { "Estado en rango normal", 0.61 },
-            { "Exceso de glucosa", 0.78 },
-            { "Alto grado de alcalinidad", 1.00 }
+            { "Estado de anemia aguda", 0.08 },
+            { "Estado en rango normal", 0.35 },
+            { "Exceso de glucosa", 0.17 },
+            { "Alto grado de alcalinidad", 0.22 }
         };
 
         // MÓDULO 1: Generación de números pseudoaleatorios
@@ -156,10 +180,11 @@ namespace SimulacionP
         }
 
         // MÓDULO 4: Evaluación y decisión
-        private (List<(int punto, double porcentaje, string aptitud, string contaminante, string condicion, int animalesAfectados, string recomendacion)>, int puntosNoApta, string contaminanteGlobal) EvaluarAptitud(List<int> alteraciones, int puntos, int animales, int muestreos)
+        private (List<(int punto, double porcentaje, string aptitud, string contaminante, string condicion, int animalesAfectados, string recomendacion)>, int puntosNoApta, List<string> contaminantesNoApta) EvaluarAptitud(List<int> alteraciones, int puntos, int animales, int muestreos)
         {
             List<(int punto, double porcentaje, string aptitud, string contaminante, string condicion, int animalesAfectados, string recomendacion)> resultadosPuntos = new List<(int, double, string, string, string, int, string)>();
             int puntosNoApta = 0;
+            List<string> contaminantesNoApta = new List<string>();
             Dictionary<string, int> conteoContaminantesGlobal = new Dictionary<string, int>
             {
                 { "Sustancias coloidales", 0 }, { "Exceso de mercurio", 0 },
@@ -184,7 +209,7 @@ namespace SimulacionP
                 if (aptitud == "No Apta")
                 {
                     puntosNoApta++;
-                    // Determinar contaminante más frecuente
+                    // Determinar todos los contaminantes presentes
                     Dictionary<string, int> conteoContaminantesPunto = new Dictionary<string, int>
                     {
                         { "Sustancias coloidales", 0 }, { "Exceso de mercurio", 0 },
@@ -205,7 +230,7 @@ namespace SimulacionP
                             }
                         }
                     }
-                    contaminante = conteoContaminantesPunto.OrderByDescending(x => x.Value).First().Key;
+                    contaminante = string.Join(", ", conteoContaminantesPunto.Where(x => x.Value > 0).Select(x => x.Key));
 
                     // Determinar condición sanguínea más frecuente
                     Dictionary<string, int> conteoCondicionesPunto = new Dictionary<string, int>
@@ -232,6 +257,8 @@ namespace SimulacionP
 
                     // Recomendación basada en porcentaje de alteraciones
                     recomendacion = porcentajeAnormal > 60 ? "Limpieza urgente" : "Monitoreo";
+                    if (!contaminantesNoApta.Contains(contaminante) && !string.IsNullOrEmpty(contaminante))
+                        contaminantesNoApta.Add(contaminante);
                 }
                 else
                 {
@@ -243,8 +270,7 @@ namespace SimulacionP
                 resultadosPuntos.Add((punto + 1, porcentajeAnormal, aptitud, contaminante, condicionSanguinea, animalesAfectados, recomendacion));
             }
 
-            string contaminanteGlobal = puntosNoApta > 0 ? conteoContaminantesGlobal.OrderByDescending(x => x.Value).First().Key : "";
-            return (resultadosPuntos, puntosNoApta, contaminanteGlobal);
+            return (resultadosPuntos, puntosNoApta, contaminantesNoApta);
         }
 
         private void dgvResultados_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -258,11 +284,17 @@ namespace SimulacionP
             int animales = (int)nudAnimales.Value;
             int dias = (int)nudDias.Value;
             int muestrasPorDia = (int)nudMuestrasPorDia.Value;
-            int muestreos = 3; // Fijo según el documento
+            int muestreos = muestreosPorPunto;
 
             // Calcular totales
             int totalMuestrasAgua = muestrasPorDia * dias * puntos;
             int totalMuestrasSangre = animales * puntos * muestreos;
+
+            // Actualizar y mostrar Labels de totales
+            lblMuestrasAgua.Text = $"Total Muestras de Agua: {totalMuestrasAgua}";
+            lblMuestrasSangre.Text = $"Total Muestras de Sangre: {totalMuestrasSangre}";
+            lblMuestrasAgua.Visible = true;
+            lblMuestrasSangre.Visible = true;
 
             // Leer probabilidades de contaminantes desde ComboBox
             double coloidales = double.Parse(cmbColoidales.SelectedItem.ToString());
@@ -340,7 +372,7 @@ namespace SimulacionP
             List<double> numerosSangre = GenerarNumerosPseudoaleatorios(totalMuestrasSangre + extra, semilla + 1);
             List<int> aguaContaminada = SimularCalidadAgua(numerosAgua, totalMuestrasAgua);
             List<int> alteracionesSanguineas = SimularImpactoAnimales(aguaContaminada, numerosSangre, puntos, animales, muestreos);
-            var (resultadosPuntos, puntosNoApta, contaminanteGlobal) = EvaluarAptitud(alteracionesSanguineas, puntos, animales, muestreos);
+            var (resultadosPuntos, puntosNoApta, contaminantesNoApta) = EvaluarAptitud(alteracionesSanguineas, puntos, animales, muestreos);
 
             // Limpiar DataGridView
             dgvResultados.Rows.Clear();
@@ -354,9 +386,41 @@ namespace SimulacionP
                 dgvResultados.Rows.Add(resultado.punto, resultado.porcentaje, resultado.aptitud, contaminante, condicion, animalesAfectados, resultado.recomendacion);
             }
 
-            // Agregar conclusión basada en las muestras de sangre
-            string conclusion = puntosNoApta > 0 ? "El agua de los mantos freáticos no es apta para el consumo animal. Contaminante principal: " + contaminanteGlobal : "El agua de los mantos freáticos es apta para seguir siendo empleada por los animales.";
-            dgvResultados.Rows.Add("Conclusión", "", conclusion, "", "", "", "");
+            // Generar y mostrar la conclusión en lblConclusiones
+            string conclusion = puntosNoApta > 0 ? "El agua de los mantos freáticos no es apta para el consumo animal. Contaminantes presentes: " + string.Join(", ", contaminantesNoApta) : "El agua de los mantos freáticos es apta para seguir siendo empleada por los animales.";
+            lblConclusiones.Text = conclusion;
+            lblConclusiones.Visible = true;
+        }
+
+        private void ComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ActualizarSumaContaminantes();
+            ActualizarSumaCondiciones();
+        }
+
+        private void ActualizarSumaContaminantes()
+        {
+            double suma = double.Parse(cmbColoidales.SelectedItem.ToString()) +
+                          double.Parse(cmbMercurio.SelectedItem.ToString()) +
+                          double.Parse(cmbPetroquimicos.SelectedItem.ToString()) +
+                          double.Parse(cmbSulfatos.SelectedItem.ToString()) +
+                          double.Parse(cmbClorhidrico.SelectedItem.ToString()) +
+                          double.Parse(cmbFosfatos.SelectedItem.ToString()) +
+                          double.Parse(cmbOxidos.SelectedItem.ToString());
+            lblContaminantesTotal.Text = $"{(suma * 100):F0}%";
+            lblContaminantesTotal.ForeColor = suma > 1.0 ? Color.Red : Color.Green;
+        }
+
+        private void ActualizarSumaCondiciones()
+        {
+            double suma = double.Parse(cmbAcidez.SelectedItem.ToString()) +
+                          double.Parse(cmbAnemia.SelectedItem.ToString()) +
+                          double.Parse(cmbNormal.SelectedItem.ToString()) +
+                          double.Parse(cmbGlucosa.SelectedItem.ToString()) +
+                          double.Parse(cmbAlcalinidad.SelectedItem.ToString());
+            lblCondicionesTotal.Text = $"{(suma * 100):F0}%";
+            lblCondicionesTotal.ForeColor = suma > 1.0 ? Color.Red : Color.Green;
         }
     }
+
 }
