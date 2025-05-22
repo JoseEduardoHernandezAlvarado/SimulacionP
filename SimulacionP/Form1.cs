@@ -50,6 +50,12 @@ namespace SimulacionP
             cmbAlcalinidad.Items.AddRange(new object[] { "0.01", "0.15", "0.20", "0.22", "0.25" });
             cmbAlcalinidad.SelectedIndex = 3; // 0.22
 
+            // Configurar ComboBox para selección de tipo de semilla
+            cmbSemDi.Items.AddRange(new object[] { "Dinámica", "Específica" });
+            cmbSemDi.SelectedIndex = 0; // Por defecto "Dinámica"
+            txtSemilla.Visible = false; // Ocultar txtSemilla inicialmente
+            lblEspSem.Visible = false;  // Ocultar lblEspSem inicialmente
+
             // Configurar DataGridView
             dgvResultados.Columns.Add("Punto", "Punto de Muestreo");
             dgvResultados.Columns.Add("PorcentajeAlteraciones", "Alteraciones (%)");
@@ -69,8 +75,11 @@ namespace SimulacionP
             dgvResultados.Columns["AnimalesAfectados"].Width = 120;
             dgvResultados.Columns["Recomendacion"].Width = 120;
 
-            // Asegurar que lblConclusiones esté oculto inicialmente
+            // Asegurar que lblConclusiones esté oculto inicialmente y ajustar su tamaño
             lblConclusiones.Visible = false;
+            lblConclusiones.AutoSize = false;
+            lblConclusiones.MaximumSize = new Size(400, 0);
+            lblConclusiones.Width = 400;
 
             // Asociar eventos a ComboBox de contaminantes
             cmbColoidales.SelectedIndexChanged += ComboBox_SelectedIndexChanged;
@@ -88,15 +97,18 @@ namespace SimulacionP
             cmbGlucosa.SelectedIndexChanged += ComboBox_SelectedIndexChanged;
             cmbAlcalinidad.SelectedIndexChanged += ComboBox_SelectedIndexChanged;
 
+            // Asociar evento a ComboBox de selección de semilla
+            cmbSemDi.SelectedIndexChanged += CmbSemDi_SelectedIndexChanged;
+
             // Calcular sumas iniciales
             ActualizarSumaContaminantes();
             ActualizarSumaCondiciones();
         }
 
         // Parámetros iniciales
-        private int a = 23; // Constante multiplicativa
-        private int c = 101; // Constante aditiva
-        private int m = 1009; // Módulo
+        private long a = 1664525; // Constante multiplicativa
+        private long c = 1013904223; // Constante aditiva
+        private long m = 4294967296; // Módulo (2^32)
         private double umbralNoApta = 0.40; // 40% de condiciones anormales
         private double porcentajeContaminacion = 0.30; // 30% según validación
         private double probAlteracionSi = 0.70; // 70% si agua contaminada
@@ -129,7 +141,7 @@ namespace SimulacionP
         private List<double> GenerarNumerosPseudoaleatorios(int cantidad, long semilla)
         {
             List<double> numeros = new List<double>();
-            int X = (int)(semilla % m); // Asegurarse de que la semilla no sea mayor que m
+            long X = (semilla % m); // Asegurarse de que la semilla no sea mayor que m
             for (int i = 0; i < cantidad; i++)
             {
                 X = (a * X + c) % m;
@@ -180,7 +192,7 @@ namespace SimulacionP
         }
 
         // MÓDULO 4: Evaluación y decisión
-        private (List<(int punto, double porcentaje, string aptitud, string contaminante, string condicion, int animalesAfectados, string recomendacion)>, int puntosNoApta, List<string> contaminantesNoApta) EvaluarAptitud(List<int> alteraciones, int puntos, int animales, int muestreos)
+        private (List<(int punto, double porcentaje, string aptitud, string contaminante, string condicion, int animalesAfectados, string recomendacion)>, int puntosNoApta, List<string> contaminantesNoApta) EvaluarAptitud(List<int> alteraciones, int puntos, int animales, int muestreos, int totalMuestrasAgua)
         {
             List<(int punto, double porcentaje, string aptitud, string contaminante, string condicion, int animalesAfectados, string recomendacion)> resultadosPuntos = new List<(int, double, string, string, string, int, string)>();
             int puntosNoApta = 0;
@@ -192,8 +204,9 @@ namespace SimulacionP
                 { "Ácido clorhídrico", 0 }, { "Fosfatos", 0 }, { "Óxidos", 0 }
             };
             long semilla = DateTime.Now.Ticks;
-            List<double> numerosAgua = GenerarNumerosPseudoaleatorios(puntos * animales * muestreos * 20, (int)(semilla % m));
-            List<double> numerosCondiciones = GenerarNumerosPseudoaleatorios(puntos * animales * muestreos * 20, (int)(semilla % m + 1));
+            int totalMuestrasSangre = puntos * animales * muestreos;
+            List<double> numerosAgua = GenerarNumerosPseudoaleatorios(totalMuestrasAgua + (int)(totalMuestrasAgua * 0.5), (int)(semilla % m));
+            List<double> numerosCondiciones = GenerarNumerosPseudoaleatorios(totalMuestrasSangre + (int)(totalMuestrasSangre * 0.5), (int)(semilla % m + 1));
 
             for (int punto = 0; punto < puntos; punto++)
             {
@@ -216,7 +229,7 @@ namespace SimulacionP
                         { "Residuos petroquimicos", 0 }, { "Sulfatos", 0 },
                         { "Ácido clorhídrico", 0 }, { "Fosfatos", 0 }, { "Óxidos", 0 }
                     };
-                    int muestrasPorPunto = animales * muestreos * 20;
+                    int muestrasPorPunto = totalMuestrasAgua / puntos; // Ajustar al valor pasado
                     for (int i = punto * muestrasPorPunto; i < (punto + 1) * muestrasPorPunto; i++)
                     {
                         double Ri = numerosAgua[i];
@@ -241,7 +254,8 @@ namespace SimulacionP
                         { "Exceso de glucosa", 0 },
                         { "Alto grado de alcalinidad", 0 }
                     };
-                    for (int i = punto * muestrasPorPunto; i < (punto + 1) * muestrasPorPunto; i++)
+                    int muestrasPorPuntoSangre = totalMuestrasSangre / puntos; // 15 muestras por punto
+                    for (int i = punto * muestrasPorPuntoSangre; i < (punto + 1) * muestrasPorPuntoSangre; i++)
                     {
                         double Ri = numerosCondiciones[i];
                         foreach (var cond in condiciones)
@@ -273,8 +287,20 @@ namespace SimulacionP
             return (resultadosPuntos, puntosNoApta, contaminantesNoApta);
         }
 
-        private void dgvResultados_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        private void CmbSemDi_SelectedIndexChanged(object sender, EventArgs e)
         {
+            // Mostrar u ocultar txtSemilla y lblEspSem según la selección
+            bool isEspecifica = cmbSemDi.SelectedItem.ToString() == "Específica";
+            txtSemilla.Visible = isEspecifica;
+            lblEspSem.Visible = isEspecifica;
+            if (isEspecifica && !string.IsNullOrEmpty(txtSemilla.Text))
+            {
+                lblEspSem.Text = $"Semilla Específica: {txtSemilla.Text}";
+            }
+            else
+            {
+                lblEspSem.Text = "Semilla Específica: (pendiente de ingreso)";
+            }
         }
 
         private void btnEjecutar_Click(object sender, EventArgs e)
@@ -364,15 +390,29 @@ namespace SimulacionP
             condiciones["Exceso de glucosa"] = condiciones["Estado en rango normal"] + glucosa;
             condiciones["Alto grado de alcalinidad"] = condiciones["Exceso de glucosa"] + alcalinidad;
 
-            // Usar la hora del sistema como semilla
-            long semilla = DateTime.Now.Ticks;
+            // Determinar la semilla según la selección de cmbSemDi
+            long semilla;
+            if (cmbSemDi.SelectedItem.ToString() == "Dinámica")
+            {
+                semilla = DateTime.Now.Ticks;
+            }
+            else // "Específica"
+            {
+                if (!long.TryParse(txtSemilla.Text, out semilla) || semilla < 0)
+                {
+                    MessageBox.Show("Por favor, ingrese un valor válido para la semilla (un número entero no negativo).");
+                    return;
+                }
+                lblEspSem.Text = $"Semilla Específica: {semilla}";
+            }
 
-            int extra = (int)(totalMuestrasAgua * 0.5); // 50% más
-            List<double> numerosAgua = GenerarNumerosPseudoaleatorios(totalMuestrasAgua + extra, semilla);
-            List<double> numerosSangre = GenerarNumerosPseudoaleatorios(totalMuestrasSangre + extra, semilla + 1);
+            int extraAgua = (int)(totalMuestrasAgua * 0.5); // 50% extra de muestras de agua
+            int extraSangre = (int)(totalMuestrasSangre * 0.5); // 50% extra de muestras de sangre
+            List<double> numerosAgua = GenerarNumerosPseudoaleatorios(totalMuestrasAgua + extraAgua, semilla);
+            List<double> numerosSangre = GenerarNumerosPseudoaleatorios(totalMuestrasSangre + extraSangre, semilla + 1);
             List<int> aguaContaminada = SimularCalidadAgua(numerosAgua, totalMuestrasAgua);
             List<int> alteracionesSanguineas = SimularImpactoAnimales(aguaContaminada, numerosSangre, puntos, animales, muestreos);
-            var (resultadosPuntos, puntosNoApta, contaminantesNoApta) = EvaluarAptitud(alteracionesSanguineas, puntos, animales, muestreos);
+            var (resultadosPuntos, puntosNoApta, contaminantesNoApta) = EvaluarAptitud(alteracionesSanguineas, puntos, animales, muestreos, totalMuestrasAgua);
 
             // Limpiar DataGridView
             dgvResultados.Rows.Clear();
@@ -414,12 +454,31 @@ namespace SimulacionP
         private void ActualizarSumaCondiciones()
         {
             double suma = double.Parse(cmbAcidez.SelectedItem.ToString()) +
-                          double.Parse(cmbAnemia.SelectedItem.ToString()) +
+                          double.Parse(cmbAnemia.SelectedIndex.ToString()) +
                           double.Parse(cmbNormal.SelectedItem.ToString()) +
                           double.Parse(cmbGlucosa.SelectedItem.ToString()) +
                           double.Parse(cmbAlcalinidad.SelectedItem.ToString());
             lblCondicionesTotal.Text = $"{(suma * 100):F0}%";
             lblCondicionesTotal.ForeColor = suma > 1.0 ? Color.Red : Color.Green;
+        }
+
+        private void dgvResultados_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+        }
+        private void cmbSemDi_SelectedIndexChanged_1(object sender, EventArgs e)
+        {// Mostrar u ocultar txtSemilla y lblEspSem según la selección
+            bool isEspecifica = cmbSemDi.SelectedItem.ToString() == "Específica";
+            txtSemilla.Visible = isEspecifica;
+            lblEspSem.Visible = isEspecifica;
+            if (isEspecifica && !string.IsNullOrEmpty(txtSemilla.Text))
+            {
+                lblEspSem.Text = $"Semilla Específica: {txtSemilla.Text}";
+            }
+            else
+            {
+                lblEspSem.Text = "Semilla Específica: (pendiente de ingreso)";
+            }
+
         }
     }
 
