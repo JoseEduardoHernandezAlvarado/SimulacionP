@@ -165,6 +165,45 @@ namespace SimulacionP
             return aguaContaminada;
         }
 
+        // NUEVO: Asignar contaminantes específicos a muestras contaminadas
+        private List<string> AsignarContaminantes(List<double> numeros, List<int> aguaContaminada, int totalMuestras)
+        {
+            List<string> contaminantesAsignados = new List<string>();
+            // Crear intervalos acumulados para contaminantes
+            var intervalos = new List<(string nombre, double inicio, double fin)>
+            {
+                ("Sustancias coloidales", 0.00, contaminantes["Sustancias coloidales"]),
+                ("Exceso de mercurio", contaminantes["Sustancias coloidales"], contaminantes["Exceso de mercurio"]),
+                ("Residuos petroquimicos", contaminantes["Exceso de mercurio"], contaminantes["Residuos petroquimicos"]),
+                ("Sulfatos", contaminantes["Residuos petroquimicos"], contaminantes["Sulfatos"]),
+                ("Ácido clorhídrico", contaminantes["Sulfatos"], contaminantes["Ácido clorhídrico"]),
+                ("Fosfatos", contaminantes["Ácido clorhídrico"], contaminantes["Fosfatos"]),
+                ("Óxidos", contaminantes["Fosfatos"], contaminantes["Óxidos"])
+            };
+
+            for (int i = 0; i < totalMuestras; i++)
+            {
+                if (aguaContaminada[i] == 1) // Solo asignar contaminante si el agua está contaminada
+                {
+                    double Ri = numeros[i];
+                    string contaminante = "Ninguno";
+                    foreach (var intervalo in intervalos)
+                    {
+                        if (Ri >= intervalo.inicio && Ri < intervalo.fin)
+                        {
+                            contaminante = intervalo.nombre;
+                            break;
+                        }
+                    }
+                    contaminantesAsignados.Add(contaminante);
+                }
+                else
+                {
+                    contaminantesAsignados.Add("No contaminado");
+                }
+            }
+            return contaminantesAsignados;
+        }
         // MÓDULO 3: Simulación de impacto en animales
         private List<int> SimularImpactoAnimales(List<int> aguaContaminada, List<double> numerosSangre, int puntos, int animales, int muestreos)
         {
@@ -454,7 +493,7 @@ namespace SimulacionP
         private void ActualizarSumaCondiciones()
         {
             double suma = double.Parse(cmbAcidez.SelectedItem.ToString()) +
-                          double.Parse(cmbAnemia.SelectedIndex.ToString()) +
+                          double.Parse(cmbAnemia.SelectedItem.ToString()) + // Fixed from SelectedIndex
                           double.Parse(cmbNormal.SelectedItem.ToString()) +
                           double.Parse(cmbGlucosa.SelectedItem.ToString()) +
                           double.Parse(cmbAlcalinidad.SelectedItem.ToString());
