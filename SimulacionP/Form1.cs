@@ -56,14 +56,14 @@ namespace SimulacionP
             txtSemilla.Visible = false; // Ocultar txtSemilla inicialmente
             lblEspSem.Visible = false;  // Ocultar lblEspSem inicialmente
 
-            // Configurar DataGridView
+            // Configurar DataGridView para resultados por punto
             dgvResultados.Columns.Add("Punto", "Punto de Muestreo");
-            dgvResultados.Columns.Add("PorcentajeAlteraciones", "Alteraciones (%)");
-            dgvResultados.Columns.Add("Aptitud", "Aptitud del Agua");
-            dgvResultados.Columns.Add("Contaminante", "Contaminante Principal");
-            dgvResultados.Columns.Add("CondicionSanguinea", "Condición Sanguínea Principal");
-            dgvResultados.Columns.Add("AnimalesAfectados", "Animales Afectados");
-            dgvResultados.Columns.Add("Recomendacion", "Recomendación");
+            dgvResultados.Columns.Add("PorcentajeAlteraciones", "Alteraciones Promedio (%)");
+            dgvResultados.Columns.Add("Aptitud", "Aptitud del Agua (Más Frecuente)");
+            dgvResultados.Columns.Add("Contaminante", "Contaminante Principal (Más Frecuente)");
+            dgvResultados.Columns.Add("CondicionSanguinea", "Condición Sanguínea Principal (Más Frecuente)");
+            dgvResultados.Columns.Add("AnimalesAfectados", "Animales Afectados Promedio");
+            dgvResultados.Columns.Add("Recomendacion", "Recomendación (Más Frecuente)");
             dgvResultados.Columns["PorcentajeAlteraciones"].DefaultCellStyle.Format = "N2";
 
             // Ajustar el ancho de las columnas para mejor visualización
@@ -75,10 +75,27 @@ namespace SimulacionP
             dgvResultados.Columns["AnimalesAfectados"].Width = 120;
             dgvResultados.Columns["Recomendacion"].Width = 120;
 
+            // Configurar dgvInformacion (ya está en el diseñador, solo añadir columnas)
+            dgvInformacion.Columns.Clear();
+            dgvInformacion.Columns.Add("PuntosContaminados", "Puntos de muestreo contaminados (%)");
+            dgvInformacion.Columns.Add("AguaNoApta", "Clasificados como agua no apta (%)");
+            dgvInformacion.Columns.Add("AnimalesAlteradosContaminada", "Animales alterados agua contaminada (%)");
+            dgvInformacion.Columns.Add("AnimalesAlteradosNoContaminada", "Animales alterados agua no contaminada (%)");
+            dgvInformacion.Columns.Add("TotalAnimales", "Total de animales simulados (Cantidad)");
+            dgvInformacion.Columns.Add("AnimalesAlterados", "Animales con alteraciones (Cantidad)");
+            // Formato para columnas de porcentaje
+            dgvInformacion.Columns["PuntosContaminados"].DefaultCellStyle.Format = "N2";
+            dgvInformacion.Columns["AguaNoApta"].DefaultCellStyle.Format = "N2";
+            dgvInformacion.Columns["AnimalesAlteradosContaminada"].DefaultCellStyle.Format = "N2";
+            dgvInformacion.Columns["AnimalesAlteradosNoContaminada"].DefaultCellStyle.Format = "N2";
+            dgvInformacion.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvInformacion.ReadOnly = true;
+            dgvInformacion.AllowUserToAddRows = false;
+
             // Asegurar que lblConclusiones esté oculto inicialmente y ajustar su tamaño
-            lblConclusiones.Visible = false;
-            lblConclusiones.AutoSize = false;
-            lblConclusiones.MaximumSize = new Size(400, 0);
+           
+         
+            lblConclusiones.MaximumSize = new Size(400, 100);
             lblConclusiones.Width = 400;
 
             // Asociar eventos a ComboBox de contaminantes
@@ -106,9 +123,9 @@ namespace SimulacionP
         }
 
         // Parámetros iniciales
-        private long a = 1664525; // Constante multiplicativa
-        private long c = 1013904223; // Constante aditiva
-        private long m = 4294967296; // Módulo (2^32)
+        private long a = 23; // Constante multiplicativa
+        private long c = 101; // Constante aditiva
+        private long m = 1009; // Módulo (2^32)
         private double umbralNoApta = 0.40; // 40% de condiciones anormales
         private double porcentajeContaminacion = 0.30; // 30% según validación
         private double probAlteracionSi = 0.70; // 70% si agua contaminada
@@ -136,7 +153,6 @@ namespace SimulacionP
             { "Exceso de glucosa", 0.17 },
             { "Alto grado de alcalinidad", 0.22 }
         };
-
         // MÓDULO 1: Generación de números pseudoaleatorios
         private List<double> GenerarNumerosPseudoaleatorios(int cantidad, long semilla)
         {
@@ -204,6 +220,7 @@ namespace SimulacionP
             }
             return contaminantesAsignados;
         }
+
         // MÓDULO 3: Simulación de impacto en animales
         private List<int> SimularImpactoAnimales(List<int> aguaContaminada, List<double> numerosSangre, int puntos, int animales, int muestreos)
         {
@@ -230,22 +247,27 @@ namespace SimulacionP
             return alteracionesSanguineas;
         }
 
-        // MÓDULO 4: Evaluación y decisión
-        private (List<(int punto, double porcentaje, string aptitud, string contaminante, string condicion, int animalesAfectados, string recomendacion)>, int puntosNoApta, List<string> contaminantesNoApta) EvaluarAptitud(List<int> alteraciones, int puntos, int animales, int muestreos, int totalMuestrasAgua)
+        // MÓDULO 4: Evaluación y decisión (modificado para devolver más datos para múltiples corridas)
+        private (List<(int punto, double porcentaje, string aptitud, string contaminante, string condicion, int animalesAfectados, string recomendacion)> resultadosPuntos, int puntosNoApta, List<string> contaminantesNoApta, List<int> aguaContaminada, List<int> alteracionesSanguineas) EvaluarAptitud(List<int> alteraciones, int puntos, int animales, int muestreos, int totalMuestrasAgua, long semilla)
         {
             List<(int punto, double porcentaje, string aptitud, string contaminante, string condicion, int animalesAfectados, string recomendacion)> resultadosPuntos = new List<(int, double, string, string, string, int, string)>();
             int puntosNoApta = 0;
             List<string> contaminantesNoApta = new List<string>();
-            Dictionary<string, int> conteoContaminantesGlobal = new Dictionary<string, int>
-            {
-                { "Sustancias coloidales", 0 }, { "Exceso de mercurio", 0 },
-                { "Residuos petroquimicos", 0 }, { "Sulfatos", 0 },
-                { "Ácido clorhídrico", 0 }, { "Fosfatos", 0 }, { "Óxidos", 0 }
-            };
-            long semilla = DateTime.Now.Ticks;
             int totalMuestrasSangre = puntos * animales * muestreos;
             List<double> numerosAgua = GenerarNumerosPseudoaleatorios(totalMuestrasAgua + (int)(totalMuestrasAgua * 0.5), (int)(semilla % m));
             List<double> numerosCondiciones = GenerarNumerosPseudoaleatorios(totalMuestrasSangre + (int)(totalMuestrasSangre * 0.5), (int)(semilla % m + 1));
+            List<int> aguaContaminada = SimularCalidadAgua(numerosAgua, totalMuestrasAgua);
+            List<string> contaminantesAsignados = AsignarContaminantes(numerosAgua, aguaContaminada, totalMuestrasAgua);
+
+            // Crear intervalos acumulados para condiciones sanguíneas
+            var intervalosCondiciones = new List<(string nombre, double inicio, double fin)>
+            {
+                ("Alto grado de acidez", 0.00, condiciones["Alto grado de acidez"]),
+                ("Estado de anemia aguda", condiciones["Alto grado de acidez"], condiciones["Estado de anemia aguda"]),
+                ("Estado en rango normal", condiciones["Estado de anemia aguda"], condiciones["Estado en rango normal"]),
+                ("Exceso de glucosa", condiciones["Estado en rango normal"], condiciones["Exceso de glucosa"]),
+                ("Alto grado de alcalinidad", condiciones["Exceso de glucosa"], condiciones["Alto grado de alcalinidad"])
+            };
 
             for (int punto = 0; punto < puntos; punto++)
             {
@@ -253,79 +275,59 @@ namespace SimulacionP
                 List<int> puntoSangre = alteraciones.GetRange(inicio, animales * muestreos);
                 double porcentajeAnormal = (double)puntoSangre.Count(x => x == 1) / puntoSangre.Count * 100;
                 string aptitud = porcentajeAnormal > (umbralNoApta * 100) ? "No Apta" : "Apta";
-                string contaminante = "";
-                string condicionSanguinea = "";
+                string contaminante = "-";
+                string condicionSanguinea = "-";
                 int animalesAfectados = puntoSangre.Count(x => x == 1);
-                string recomendacion = "";
+                string recomendacion = aptitud == "Apta" ? "Sin acción" : (porcentajeAnormal > 60 ? "Limpieza urgente" : "Monitoreo");
 
                 if (aptitud == "No Apta")
                 {
                     puntosNoApta++;
-                    // Determinar todos los contaminantes presentes
-                    Dictionary<string, int> conteoContaminantesPunto = new Dictionary<string, int>
+                    // Obtener el contaminante más frecuente para este punto
+                    int muestrasPorPunto = totalMuestrasAgua / puntos;
+                    var conteoContaminantesPunto = new Dictionary<string, int>
                     {
                         { "Sustancias coloidales", 0 }, { "Exceso de mercurio", 0 },
                         { "Residuos petroquimicos", 0 }, { "Sulfatos", 0 },
                         { "Ácido clorhídrico", 0 }, { "Fosfatos", 0 }, { "Óxidos", 0 }
                     };
-                    int muestrasPorPunto = totalMuestrasAgua / puntos; // Ajustar al valor pasado
                     for (int i = punto * muestrasPorPunto; i < (punto + 1) * muestrasPorPunto; i++)
                     {
-                        double Ri = numerosAgua[i];
-                        foreach (var cont in contaminantes)
-                        {
-                            if (Ri < cont.Value)
-                            {
-                                conteoContaminantesPunto[cont.Key]++;
-                                conteoContaminantesGlobal[cont.Key]++;
-                                break;
-                            }
-                        }
+                        if (contaminantesAsignados[i] != "No contaminado")
+                            conteoContaminantesPunto[contaminantesAsignados[i]]++;
                     }
-                    contaminante = string.Join(", ", conteoContaminantesPunto.Where(x => x.Value > 0).Select(x => x.Key));
+                    contaminante = conteoContaminantesPunto.OrderByDescending(x => x.Value).FirstOrDefault(x => x.Value > 0).Key ?? "Ninguno";
+                    if (contaminante != "Ninguno" && !contaminantesNoApta.Contains(contaminante))
+                        contaminantesNoApta.Add(contaminante);
 
-                    // Determinar condición sanguínea más frecuente
-                    Dictionary<string, int> conteoCondicionesPunto = new Dictionary<string, int>
+                    // Obtener la condición sanguínea más frecuente
+                    var conteoCondicionesPunto = new Dictionary<string, int>
                     {
-                        { "Alto grado de acidez", 0 },
-                        { "Estado de anemia aguda", 0 },
-                        { "Estado en rango normal", 0 },
-                        { "Exceso de glucosa", 0 },
+                        { "Alto grado de acidez", 0 }, { "Estado de anemia aguda", 0 },
+                        { "Estado en rango normal", 0 }, { "Exceso de glucosa", 0 },
                         { "Alto grado de alcalinidad", 0 }
                     };
-                    int muestrasPorPuntoSangre = totalMuestrasSangre / puntos; // 15 muestras por punto
-                    for (int i = punto * muestrasPorPuntoSangre; i < (punto + 1) * muestrasPorPuntoSangre; i++)
+                    int idxInicioCond = punto * animales * muestreos;
+                    for (int i = idxInicioCond; i < idxInicioCond + animales * muestreos; i++)
                     {
                         double Ri = numerosCondiciones[i];
-                        foreach (var cond in condiciones)
+                        foreach (var intervalo in intervalosCondiciones)
                         {
-                            if (Ri < cond.Value)
+                            if (Ri >= intervalo.inicio && Ri < intervalo.fin)
                             {
-                                conteoCondicionesPunto[cond.Key]++;
+                                conteoCondicionesPunto[intervalo.nombre]++;
                                 break;
                             }
                         }
                     }
                     condicionSanguinea = conteoCondicionesPunto.OrderByDescending(x => x.Value).First().Key;
-
-                    // Recomendación basada en porcentaje de alteraciones
-                    recomendacion = porcentajeAnormal > 60 ? "Limpieza urgente" : "Monitoreo";
-                    if (!contaminantesNoApta.Contains(contaminante) && !string.IsNullOrEmpty(contaminante))
-                        contaminantesNoApta.Add(contaminante);
-                }
-                else
-                {
-                    contaminante = "-";
-                    condicionSanguinea = "-";
-                    recomendacion = "Sin acción";
                 }
 
                 resultadosPuntos.Add((punto + 1, porcentajeAnormal, aptitud, contaminante, condicionSanguinea, animalesAfectados, recomendacion));
             }
 
-            return (resultadosPuntos, puntosNoApta, contaminantesNoApta);
+            return (resultadosPuntos, puntosNoApta, contaminantesNoApta, aguaContaminada, alteraciones);
         }
-
         private void CmbSemDi_SelectedIndexChanged(object sender, EventArgs e)
         {
             // Mostrar u ocultar txtSemilla y lblEspSem según la selección
@@ -344,6 +346,14 @@ namespace SimulacionP
 
         private void btnEjecutar_Click(object sender, EventArgs e)
         {
+            // Leer y validar el número de corridas desde txtCorridas
+            int numCorridas;
+            if (!int.TryParse(txtCorridas.Text, out numCorridas) || numCorridas <= 0)
+            {
+                MessageBox.Show("Por favor, ingrese un número válido de corridas (un entero positivo).");
+                return;
+            }
+
             // Leer parámetros dinámicos desde los controles
             int puntos = (int)nudPuntos.Value;
             int animales = (int)nudAnimales.Value;
@@ -354,13 +364,9 @@ namespace SimulacionP
             // Calcular totales
             int totalMuestrasAgua = muestrasPorDia * dias * puntos;
             int totalMuestrasSangre = animales * puntos * muestreos;
+            int totalAnimalesSimulados = totalMuestrasSangre;
 
-            // Actualizar y mostrar Labels de totales
-            lblMuestrasAgua.Text = $"Total Muestras de Agua: {totalMuestrasAgua}";
-            lblMuestrasSangre.Text = $"Total Muestras de Sangre: {totalMuestrasSangre}";
-            lblMuestrasAgua.Visible = true;
-            lblMuestrasSangre.Visible = true;
-
+        
             // Leer probabilidades de contaminantes desde ComboBox
             double coloidales = double.Parse(cmbColoidales.SelectedItem.ToString());
             double mercurio = double.Parse(cmbMercurio.SelectedItem.ToString());
@@ -429,47 +435,149 @@ namespace SimulacionP
             condiciones["Exceso de glucosa"] = condiciones["Estado en rango normal"] + glucosa;
             condiciones["Alto grado de alcalinidad"] = condiciones["Exceso de glucosa"] + alcalinidad;
 
-            // Determinar la semilla según la selección de cmbSemDi
-            long semilla;
+            // Determinar la semilla inicial según la selección de cmbSemDi
+            long semillaBase;
             if (cmbSemDi.SelectedItem.ToString() == "Dinámica")
             {
-                semilla = DateTime.Now.Ticks;
+                semillaBase = DateTime.Now.Ticks;
             }
             else // "Específica"
             {
-                if (!long.TryParse(txtSemilla.Text, out semilla) || semilla < 0)
+                if (!long.TryParse(txtSemilla.Text, out semillaBase) || semillaBase < 0)
                 {
                     MessageBox.Show("Por favor, ingrese un valor válido para la semilla (un número entero no negativo).");
                     return;
                 }
-                lblEspSem.Text = $"Semilla Específica: {semilla}";
+                lblEspSem.Text = $"Semilla Específica: {semillaBase}";
             }
 
             int extraAgua = (int)(totalMuestrasAgua * 0.5); // 50% extra de muestras de agua
             int extraSangre = (int)(totalMuestrasSangre * 0.5); // 50% extra de muestras de sangre
-            List<double> numerosAgua = GenerarNumerosPseudoaleatorios(totalMuestrasAgua + extraAgua, semilla);
-            List<double> numerosSangre = GenerarNumerosPseudoaleatorios(totalMuestrasSangre + extraSangre, semilla + 1);
-            List<int> aguaContaminada = SimularCalidadAgua(numerosAgua, totalMuestrasAgua);
-            List<string> contaminantesAsignados = AsignarContaminantes(numerosAgua, aguaContaminada, totalMuestrasAgua);
-            List<int> alteracionesSanguineas = SimularImpactoAnimales(aguaContaminada, numerosSangre, puntos, animales, muestreos);
-            var (resultadosPuntos, puntosNoApta, contaminantesNoApta) = EvaluarAptitud(alteracionesSanguineas, puntos, animales, muestreos, totalMuestrasAgua);
 
-            // Limpiar DataGridView
-            dgvResultados.Rows.Clear();
+            // Estructuras para almacenar los resultados de todas las corridas
+            var resultadosPorPunto = new List<List<(int punto, double porcentaje, string aptitud, string contaminante, string condicion, int animalesAfectados, string recomendacion)>>();
+            double totalPuntosContaminados = 0;
+            double totalPuntosNoApta = 0;
+            double totalAnimalesAlteradosAguaContaminada = 0;
+            double totalAnimalesAlteradosAguaNoContaminada = 0;
+            int totalAnimalesConAlteraciones = 0;
 
-            // Agregar resultados por punto
-            foreach (var resultado in resultadosPuntos)
+            // Ejecutar las simulaciones (corridas)
+            for (int corrida = 0; corrida < numCorridas; corrida++)
             {
-                string contaminante = resultado.aptitud == "No Apta" ? resultado.contaminante : "-";
-                string condicion = resultado.aptitud == "No Apta" ? resultado.condicion : "-";
-                string animalesAfectados = resultado.animalesAfectados + " de " + (animales * muestreos);
-                dgvResultados.Rows.Add(resultado.punto, resultado.porcentaje, resultado.aptitud, contaminante, condicion, animalesAfectados, resultado.recomendacion);
+                long semillaCorrida = semillaBase + corrida; // Ajustar la semilla para cada corrida
+                List<double> numerosAgua = GenerarNumerosPseudoaleatorios(totalMuestrasAgua + extraAgua, semillaCorrida);
+                List<double> numerosSangre = GenerarNumerosPseudoaleatorios(totalMuestrasSangre + extraSangre, semillaCorrida + 1);
+                List<int> aguaContaminada = SimularCalidadAgua(numerosAgua, totalMuestrasAgua);
+                List<int> alteracionesSanguineas = SimularImpactoAnimales(aguaContaminada, numerosSangre, puntos, animales, muestreos);
+                var (resultadosPuntosCorrida, puntosNoAptaCorrida, contaminantesNoAptaCorrida, aguaContaminadaCorrida, alteracionesCorrida) = EvaluarAptitud(alteracionesSanguineas, puntos, animales, muestreos, totalMuestrasAgua, semillaCorrida);
+
+                // Almacenar los resultados por punto
+                resultadosPorPunto.Add(resultadosPuntosCorrida);
+
+                // Calcular métricas para dgvInformacion
+                // Puntos de muestreo contaminados (%)
+                totalPuntosContaminados += (double)aguaContaminadaCorrida.Count(x => x == 1) / totalMuestrasAgua * 100;
+
+                // Clasificados como agua no apta (%)
+                totalPuntosNoApta += (double)puntosNoAptaCorrida / puntos * 100;
+
+                // Animales alterados (agua contaminada y no contaminada)
+                int muestrasPorPunto = totalMuestrasAgua / puntos;
+                int animalesPorPunto = animales * muestreos;
+                int animalesAlteradosContaminada = 0;
+                int animalesAlteradosNoContaminada = 0;
+                int totalAnimalesContaminada = 0;
+                int totalAnimalesNoContaminada = 0;
+
+                for (int punto = 0; punto < puntos; punto++)
+                {
+                    int contaminados = aguaContaminadaCorrida.GetRange(punto * muestrasPorPunto, muestrasPorPunto).Count(x => x == 1);
+                    bool esContaminado = contaminados > 0; // Consideramos un punto contaminado si tiene al menos una muestra contaminada
+                    int inicioSangre = punto * animalesPorPunto;
+                    int animalesAfectadosPunto = alteracionesCorrida.GetRange(inicioSangre, animalesPorPunto).Count(x => x == 1);
+
+                    if (esContaminado)
+                    {
+                        animalesAlteradosContaminada += animalesAfectadosPunto;
+                        totalAnimalesContaminada += animalesPorPunto;
+                    }
+                    else
+                    {
+                        animalesAlteradosNoContaminada += animalesAfectadosPunto;
+                        totalAnimalesNoContaminada += animalesPorPunto;
+                    }
+                }
+
+                totalAnimalesAlteradosAguaContaminada += totalAnimalesContaminada > 0 ? (double)animalesAlteradosContaminada / totalAnimalesContaminada * 100 : 0;
+                totalAnimalesAlteradosAguaNoContaminada += totalAnimalesNoContaminada > 0 ? (double)animalesAlteradosNoContaminada / totalAnimalesNoContaminada * 100 : 0;
+
+                // Total de animales con alteraciones
+                totalAnimalesConAlteraciones += alteracionesCorrida.Count(x => x == 1);
+            }
+
+            // Procesar resultados para dgvResultados (promedios y frecuencias por punto)
+            var resultadosPromedio = new List<(int punto, double porcentaje, string aptitud, string contaminante, string condicion, double animalesAfectados, string recomendacion)>();
+            for (int punto = 1; punto <= puntos; punto++)
+            {
+                var resultadosPunto = resultadosPorPunto.SelectMany(r => r.Where(x => x.punto == punto)).ToList();
+
+                // Promedio de porcentaje de alteraciones
+                double porcentajePromedio = resultadosPunto.Average(x => x.porcentaje);
+
+                // Aptitud más frecuente
+                string aptitudFrecuente = resultadosPunto.GroupBy(x => x.aptitud)
+                    .OrderByDescending(g => g.Count())
+                    .First().Key;
+
+                // Contaminante más frecuente (solo si no es "-")
+                string contaminanteFrecuente = resultadosPunto.Where(x => x.contaminante != "-")
+                    .GroupBy(x => x.contaminante)
+                    .OrderByDescending(g => g.Count())
+                    .FirstOrDefault()?.Key ?? "-";
+
+                // Condición sanguínea más frecuente (solo si no es "-")
+                string condicionFrecuente = resultadosPunto.Where(x => x.condicion != "-")
+                    .GroupBy(x => x.condicion)
+                    .OrderByDescending(g => g.Count())
+                    .FirstOrDefault()?.Key ?? "-";
+
+                // Promedio de animales afectados (dividido por el número de corridas)
+                double animalesAfectadosPromedio = resultadosPunto.Average(x => x.animalesAfectados) / numCorridas;
+
+                // Recomendación más frecuente
+                string recomendacionFrecuente = resultadosPunto.GroupBy(x => x.recomendacion)
+                    .OrderByDescending(g => g.Count())
+                    .First().Key;
+
+                resultadosPromedio.Add((punto, porcentajePromedio, aptitudFrecuente, contaminanteFrecuente, condicionFrecuente, animalesAfectadosPromedio, recomendacionFrecuente));
+            }
+
+            // Limpiar DataGridView y agregar resultados promediados
+            dgvResultados.Rows.Clear();
+            foreach (var resultado in resultadosPromedio)
+            {
+                string animalesAfectados = $"{resultado.animalesAfectados:F2} de {animales * muestreos}";
+                dgvResultados.Rows.Add(resultado.punto, resultado.porcentaje, resultado.aptitud, resultado.contaminante, resultado.condicion, animalesAfectados, resultado.recomendacion);
             }
 
             // Generar y mostrar la conclusión en lblConclusiones
-            string conclusion = puntosNoApta > 0 ? "El agua de los mantos freáticos no es apta para el consumo animal. Contaminantes presentes: " + string.Join(", ", contaminantesNoApta) : "El agua de los mantos freáticos es apta para seguir siendo empleada por los animales.";
+            int puntosNoAptaPromedio = resultadosPromedio.Count(x => x.aptitud == "No Apta");
+            var contaminantesNoApta = resultadosPromedio.Where(x => x.contaminante != "-").Select(x => x.contaminante).Distinct().ToList();
+            string conclusion = puntosNoAptaPromedio > 0 ? "El agua de los mantos freáticos no es apta para el consumo animal (promedio). Contaminantes presentes: " + string.Join(", ", contaminantesNoApta) : "El agua de los mantos freáticos es apta para seguir siendo empleada por los animales (promedio).";
             lblConclusiones.Text = conclusion;
             lblConclusiones.Visible = true;
+
+            // Calcular métricas promediadas para dgvInformacion
+            double promedioPuntosContaminados = totalPuntosContaminados / numCorridas;
+            double promedioPuntosNoApta = totalPuntosNoApta / numCorridas;
+            double promedioAnimalesAlteradosContaminada = totalAnimalesAlteradosAguaContaminada / numCorridas;
+            double promedioAnimalesAlteradosNoContaminada = totalAnimalesAlteradosAguaNoContaminada / numCorridas;
+            int promedioAnimalesConAlteraciones = totalAnimalesConAlteraciones / numCorridas;
+
+            // Limpiar y llenar dgvInformacion
+            dgvInformacion.Rows.Clear();
+            dgvInformacion.Rows.Add(promedioPuntosContaminados, promedioPuntosNoApta, promedioAnimalesAlteradosContaminada, promedioAnimalesAlteradosNoContaminada, totalAnimalesSimulados, promedioAnimalesConAlteraciones);
         }
 
         private void ComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -494,7 +602,7 @@ namespace SimulacionP
         private void ActualizarSumaCondiciones()
         {
             double suma = double.Parse(cmbAcidez.SelectedItem.ToString()) +
-                          double.Parse(cmbAnemia.SelectedItem.ToString()) + // Fixed from SelectedIndex
+                          double.Parse(cmbAnemia.SelectedItem.ToString()) +
                           double.Parse(cmbNormal.SelectedItem.ToString()) +
                           double.Parse(cmbGlucosa.SelectedItem.ToString()) +
                           double.Parse(cmbAlcalinidad.SelectedItem.ToString());
@@ -505,8 +613,10 @@ namespace SimulacionP
         private void dgvResultados_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
         }
+
         private void cmbSemDi_SelectedIndexChanged_1(object sender, EventArgs e)
-        {// Mostrar u ocultar txtSemilla y lblEspSem según la selección
+        {
+            // Mostrar u ocultar txtSemilla y lblEspSem según la selección
             bool isEspecifica = cmbSemDi.SelectedItem.ToString() == "Específica";
             txtSemilla.Visible = isEspecifica;
             lblEspSem.Visible = isEspecifica;
@@ -518,8 +628,10 @@ namespace SimulacionP
             {
                 lblEspSem.Text = "Semilla Específica: (pendiente de ingreso)";
             }
+        }
 
+        private void Form1_Load(object sender, EventArgs e)
+        {
         }
     }
-
 }
