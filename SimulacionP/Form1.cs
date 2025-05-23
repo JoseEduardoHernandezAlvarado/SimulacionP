@@ -450,6 +450,7 @@ namespace SimulacionP
             List<double> numerosAgua = GenerarNumerosPseudoaleatorios(totalMuestrasAgua + extraAgua, semilla);
             List<double> numerosSangre = GenerarNumerosPseudoaleatorios(totalMuestrasSangre + extraSangre, semilla + 1);
             List<int> aguaContaminada = SimularCalidadAgua(numerosAgua, totalMuestrasAgua);
+            List<string> contaminantesAsignados = AsignarContaminantes(numerosAgua, aguaContaminada, totalMuestrasAgua);
             List<int> alteracionesSanguineas = SimularImpactoAnimales(aguaContaminada, numerosSangre, puntos, animales, muestreos);
             var (resultadosPuntos, puntosNoApta, contaminantesNoApta) = EvaluarAptitud(alteracionesSanguineas, puntos, animales, muestreos, totalMuestrasAgua);
 
